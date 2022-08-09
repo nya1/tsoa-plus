@@ -156,9 +156,10 @@ export interface ExtendedRoutesConfig extends RoutesConfig {
   noImplicitAdditionalProperties: Exclude<Config['noImplicitAdditionalProperties'], undefined>;
   controllerPathGlobs?: Config['controllerPathGlobs'];
   multerOpts?: Config['multerOpts'];
+  skipBuiltinValidation?: boolean;
 }
 
-const validateRoutesConfig = async (config: Config): Promise<ExtendedRoutesConfig> => {
+const validateRoutesConfig = async (config: Config & { skipBuiltinValidation?: boolean }): Promise<ExtendedRoutesConfig> => {
   if (!config.entryFile && (!config.controllerPathGlobs || !config.controllerPathGlobs.length)) {
     throw new Error('Missing entryFile and controllerPathGlobs: Configuration must contain an entry point file or controller path globals.');
   }
@@ -187,6 +188,7 @@ const validateRoutesConfig = async (config: Config): Promise<ExtendedRoutesConfi
     noImplicitAdditionalProperties,
     controllerPathGlobs: config.controllerPathGlobs,
     multerOpts: config.multerOpts,
+    skipBuiltinValidation: config.skipBuiltinValidation,
   };
 };
 

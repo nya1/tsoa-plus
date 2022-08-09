@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { Controller, ValidationService, FieldErrors, ValidateError, TsoaRoute, HttpStatusCodeLiteral, TsoaResponse, fetchMiddlewares } from '@tsoa/runtime';
+import { Controller, {{#if enableOpenApiBasedValidation}}ValidationService,{{/if}} FieldErrors, {{#if enableOpenApiBasedValidation}}ValidateError,{{/if}} TsoaRoute, HttpStatusCodeLiteral, TsoaResponse, fetchMiddlewares } from '@tsoa/runtime';
 {{#each controllers}}
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { {{name}} } from '{{modulePath}}';
@@ -56,8 +56,9 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     {{/each}}
 };
+{{#if enableOpenApiBasedValidation}}
 const validationService = new ValidationService(models);
-
+{{/if}}
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 export function RegisterRoutes(app: express.Router) {
@@ -237,6 +238,7 @@ export function RegisterRoutes(app: express.Router) {
             switch (args[key].in) {
                 case 'request':
                     return request;
+                {{#if enableOpenApiBasedValidation}}
                 case 'query':
                     return validationService.ValidateParam(args[key], request.query[name], name, fieldErrors, undefined, {{{json minimalSwaggerConfig}}});
                 case 'path':
@@ -255,14 +257,35 @@ export function RegisterRoutes(app: express.Router) {
                     } else {
                         return validationService.ValidateParam(args[key], request.body[name], name, fieldErrors, undefined, {{{json minimalSwaggerConfig}}});
                     }
+                {{else}}
+                case 'query':
+                    return request.query[name];
+                case 'path':
+                    return request.params[name];
+                case 'header':
+                    return request.header(name);
+                case 'body':
+                    return request.body;
+                case 'body-prop':
+                    return request.body[name];
+                case 'formData':
+                    if (args[key].dataType === 'file') {
+                        return request.file;
+                    } else if (args[key].dataType === 'array' && args[key].array.dataType === 'file') {
+                        return request.files;
+                    } else {
+                        return request.body[name];
+                    }
+                {{/if}}
                 case 'res':
                     return responder(response);
             }
         });
-
+        {{#if enableOpenApiBasedValidation}}
         if (Object.keys(fieldErrors).length > 0) {
             throw new ValidateError(fieldErrors, '');
         }
+        {{/if}}
         return values;
     }
 

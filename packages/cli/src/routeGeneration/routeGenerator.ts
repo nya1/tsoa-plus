@@ -67,6 +67,8 @@ export class RouteGenerator {
 
     const normalisedBasePath = normalisePath(this.options.basePath as string, '/');
 
+    const enableOpenApiBasedValidation = !(this.options.skipBuiltinValidation ?? false);
+
     return routesTemplate({
       authenticationModule,
       basePath: normalisedBasePath,
@@ -125,6 +127,7 @@ export class RouteGenerator {
       multerOpts: this.options.multerOpts,
       useSecurity: this.metadata.controllers.some(controller => controller.methods.some(method => !!method.security.length)),
       esm: this.options.esm,
+      enableOpenApiBasedValidation,
     });
   }
 

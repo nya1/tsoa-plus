@@ -1,3 +1,8 @@
+
+stock tsoa with new optional configuation `skipBuiltinValidation` to skip tsoa's builtin validation, this won't affect the swagger generation.
+
+---
+
 <div align="center">
   <a href="https://tsoa-community.github.io/docs/" target="blank">
     <h1>tsoa</h1>
